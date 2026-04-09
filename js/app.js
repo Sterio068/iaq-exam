@@ -1,4 +1,4 @@
-// 室內空品備考系統 - 主程式
+// 室內空品題庫備考系統 - 主程式
 
 // 系統設定常數
 const CONFIG = {
@@ -58,7 +58,7 @@ const App = {
         this.setupKeyboardShortcuts();
         
         // Service Worker: 網站版本不註冊（避免快取廣告腳本）
-        // 如需離線功能，改用單檔版本 室內空品備考系統.html
+        // 如需離線功能，改用單檔版本 室內空品題庫備考系統.html
 
         // Ad blocker 偵測：隱藏空白廣告容器
         setTimeout(() => {
