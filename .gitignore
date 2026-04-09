@@ -16,3 +16,5 @@ Thumbs.db
 *.swo
 node_modules/
 .vercel/
+
+.vercel
