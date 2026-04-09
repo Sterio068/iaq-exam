@@ -1,0 +1,18 @@
+# Build tools & source docs (not needed for web deployment)
+parser/
+doc/
+考試文檔/
+build_single_file.js
+build_single_file.py
+find_null_answers.py
+fix_null_answers.py
+null_answers.txt
+室內空品備考系統.html
+
+# System
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+node_modules/
+.vercel/

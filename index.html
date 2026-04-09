@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="室內空氣品質維護管理專責人員考試練習系統，包含題庫練習、模擬考試、錯題複習、法規查詢等功能，完全免費！">
+    <meta name="keywords" content="室內空品, 室內空氣品質, 考試, 練習, 題庫, 模擬考, 專責人員">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="室內空品備考系統">
+    <title>室內空品備考系統 - 室內空氣品質維護管理專責人員</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="室內空品備考系統 - 免費模擬考試練習">
+    <meta property="og:description" content="室內空氣品質維護管理專責人員考試免費練習系統，541題題庫、模擬考試、法規查詢">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_TW">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="室內空品備考系統 - 免費模擬考試練習">
+    <meta name="twitter:description" content="室內空氣品質維護管理專責人員考試免費練習系統">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "室內空品備考系統",
+        "description": "室內空氣品質維護管理專責人員考試練習系統",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "inLanguage": "zh-TW",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "TWD"
+        }
+    }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2306490072598524" crossorigin="anonymous"></script>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA4_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'YOUR_GA4_ID');
+    </script>
+</head>
+<body>
+    <!-- 載入指示器 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>載入中...</p>
+    </div>
+    
+    <div class="container">
+        <!-- 頁面標題 -->
+        <header class="header">
+            <h1>🏢 室內空品備考系統</h1>
+            <p>室內空氣品質維護管理專責人員考試練習</p>
+        </header>
+
+        <!-- 廣告: Header 下方 -->
+        <div class="ad-container" id="ad-header">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2306490072598524" data-ad-slot="AD_SLOT_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <!-- 主選單 -->
+        <nav class="main-menu" id="mainMenu">
+            <div class="menu-card" onclick="App.showSection('dashboard')">
+                <div class="menu-icon">📊</div>
+                <h3>學習儀表板</h3>
+                <p>掌握學習進度</p>
+            </div>
+            <div class="menu-card" onclick="App.showSection('practice')">
+                <div class="menu-icon">📝</div>
+                <h3>題庫練習</h3>
+                <p>循序漸進備考</p>
+            </div>
+            <div class="menu-card" onclick="App.showSection('exam')">
+                <div class="menu-icon">⏱️</div>
+                <h3>模擬考試</h3>
+                <p>限時90分鐘</p>
+            </div>
+            <div class="menu-card" onclick="App.showSection('review')">
+                <div class="menu-icon">📋</div>
+                <h3>複習中心</h3>
+                <p>錯題/收藏/不確定</p>
+            </div>
+            <div class="menu-card" onclick="App.showSection('regulations')">
+                <div class="menu-icon">📖</div>
+                <h3>法規查詢</h3>
+                <p>法規原文參考</p>
+            </div>
+            <div class="menu-card" onclick="App.showSection('manage')">
+                <div class="menu-icon">⚙️</div>
+                <h3>題庫管理</h3>
+                <p>新增/編輯題目</p>
+            </div>
+        </nav>
+
+        <!-- 學習儀表板 -->
+        <section class="section" id="dashboardSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>📊 學習儀表板</h2>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">總題數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statPracticed">0</div>
+                    <div class="stat-label">已練習</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statCorrect">0%</div>
+                    <div class="stat-label">正確率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statWrong">0</div>
+                    <div class="stat-label">錯題數</div>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <h3>📈 學習進度</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <p id="progressText">已完成 0% 的題庫</p>
+            </div>
+
+            <div class="category-progress">
+                <h3>🎯 類別掌握度</h3>
+                <div id="categoryList"></div>
+            </div>
+
+            <div class="recommend-section">
+                <h3>📌 推薦複習</h3>
+                <div id="recommendList"></div>
+            </div>
+        </section>
+
+        <!-- 題庫練習區 -->
+        <section class="section" id="practiceSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>📝 題庫練習</h2>
+            </div>
+            
+            <div class="practice-mode-select" id="practiceModeSelect">
+                <h3>選擇練習模式</h3>
+                <div class="mode-grid">
+                    <div class="mode-card" onclick="App.showCategorySelect()">
+                        <div class="mode-icon">📚</div>
+                        <h4>類別練習</h4>
+                        <p>按類別逐題練習</p>
+                    </div>
+                    <div class="mode-card" onclick="App.startPractice('random')">
+                        <div class="mode-icon">🎲</div>
+                        <h4>隨機練習</h4>
+                        <p>所有題目隨機抽取</p>
+                    </div>
+                    <div class="mode-card" onclick="App.startPractice('timed')">
+                        <div class="mode-icon">⏱️</div>
+                        <h4>限時練習</h4>
+                        <p>20題/30分鐘</p>
+                    </div>
+                    <div class="mode-card" onclick="App.startPractice('weak')">
+                        <div class="mode-icon">📌</div>
+                        <h4>加強練習</h4>
+                        <p>針對弱點題目</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 廣告: 練習模式選擇區下方 -->
+            <div class="ad-container" id="ad-practice">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2306490072598524" data-ad-slot="AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <!-- 類別選擇 -->
+            <div class="category-select" id="categorySelect" style="display:none;">
+                <h3>選擇類別</h3>
+                <div class="category-grid" id="categoryGrid"></div>
+                <button class="btn btn-secondary" onclick="App.showPracticeModes()">返回</button>
+            </div>
+
+            <!-- 練習區 -->
+            <div class="practice-area" id="practiceArea" style="display:none;">
+                <div class="question-header">
+                    <span class="question-count" id="questionCount"></span>
+                    <span class="question-progress" id="questionProgress"></span>
+                </div>
+                
+                <div class="question-box" id="questionBox">
+                    <div class="question-text" id="questionText"></div>
+                    <div class="question-image" id="questionImage" style="display:none;"></div>
+                    
+                    <!-- 填充題/問答題 -->
+                    <div class="fill-blank-area" id="fillBlankArea">
+                        <textarea id="userAnswer" placeholder="請輸入答案"></textarea>
+                    </div>
+                    
+                    <!-- 選擇題 -->
+                    <div class="choice-area" id="choiceArea" style="display:none;">
+                        <div class="choice-options" id="choiceOptions"></div>
+                    </div>
+                    
+                    <div class="answer-buttons" id="answer-buttons">
+                        <button class="btn btn-primary" onclick="App.submitAnswer()">提交答案</button>
+                        <button class="btn btn-secondary" onclick="App.showSolution()">查看解答</button>
+                    </div>
+                </div>
+
+                <div class="result-section" id="resultSection" style="display:none;">
+                    <div class="result-header" id="resultHeader"></div>
+                    <div class="correct-answer" id="correctAnswer"></div>
+                    <div class="explanation" id="explanation"></div>
+                    <div class="result-buttons">
+                        <button class="btn btn-secondary" id="favoriteBtn" onclick="App.toggleFavorite()">☆ 收藏</button>
+                        <button class="btn btn-secondary" id="uncertainBtn" onclick="App.toggleUncertain()">？ 不確定</button>
+                        <button class="btn btn-primary" onclick="App.nextQuestion()">下一題 →</button>
+                    </div>
+                </div>
+
+                <div class="practice-footer">
+                    <button class="btn btn-small" onclick="App.quitPractice()">結束練習</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模擬考試區 -->
+        <section class="section" id="examSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>⏱️ 模擬考試</h2>
+            </div>
+
+            <div class="exam-start" id="examStart">
+                <div class="exam-info">
+                    <h3>考試說明</h3>
+                    <ul>
+                        <li>考試時間：90 分鐘</li>
+                        <li>題目數量：50 題</li>
+                        <li>題目類型：填充題、問答題、選擇題</li>
+                        <li>及格分數：70 分（35題）</li>
+                    </ul>
+                    <button class="btn btn-primary btn-large" onclick="App.startExam()">開始考試</button>
+                </div>
+            </div>
+
+            <div class="exam-area" id="examArea" style="display:none;">
+                <div class="exam-header">
+                    <div class="exam-timer" id="examTimer">90:00</div>
+                    <div class="exam-progress">
+                        <span id="examProgress">1/50</span>
+                    </div>
+                </div>
+                
+                <div class="exam-question-box" id="examQuestionBox">
+                    <div class="question-text" id="examQuestionText"></div>
+                    <div class="question-image" id="examQuestionImage" style="display:none;"></div>
+                    
+                    <div class="fill-blank-area" id="examFillArea">
+                        <textarea id="examUserAnswer" placeholder="請輸入答案"></textarea>
+                    </div>
+                    
+                    <div class="choice-area" id="examChoiceArea" style="display:none;">
+                        <div class="choice-options" id="examChoiceOptions"></div>
+                    </div>
+                </div>
+
+                <div class="exam-footer">
+                    <button class="btn btn-secondary" onclick="App.prevExamQuestion()">← 上一題</button>
+                    <button class="btn btn-primary" onclick="App.submitExamAnswer()">提交</button>
+                    <button class="btn btn-secondary" onclick="App.nextExamQuestion()">下一題 →</button>
+                </div>
+
+                <div class="exam-nav-dots" id="examNavDots"></div>
+            </div>
+
+            <div class="exam-result" id="examResult" style="display:none;">
+                <h2>考試完成</h2>
+                <div class="result-stats">
+                    <div class="stat">
+                        <span class="stat-label">作答題數</span>
+                        <span class="stat-value" id="resultTotal">50</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">正確題數</span>
+                        <span class="stat-value" id="resultCorrect">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">正確率</span>
+                        <span class="stat-value" id="resultPercent">0%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">考試時間</span>
+                        <span class="stat-value" id="resultTime">00:00</span>
+                    </div>
+                </div>
+                <div class="result-status" id="resultStatus"></div>
+                <button class="btn btn-primary" onclick="App.showSection('menu')">返回首頁</button>
+            </div>
+        </section>
+
+        <!-- 複習中心 -->
+        <section class="section" id="reviewSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>📋 複習中心</h2>
+            </div>
+
+            <div class="review-tabs">
+                <button class="tab-btn active" onclick="App.showReviewTab('wrong')">錯題本</button>
+                <button class="tab-btn" onclick="App.showReviewTab('favorite')">收藏題目</button>
+                <button class="tab-btn" onclick="App.showReviewTab('uncertain')">不確定題目</button>
+                <button class="tab-btn" onclick="App.showReviewTab('history')">考試記錄</button>
+            </div>
+
+            <div class="review-list" id="wrongList"></div>
+            <div class="review-list" id="favoriteList" style="display:none;"></div>
+            <div class="review-list" id="uncertainList" style="display:none;"></div>
+            <div class="review-list" id="historyList" style="display:none;"></div>
+        </section>
+
+        <!-- 法規查詢 -->
+        <section class="section" id="regulationsSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>📖 法規查詢</h2>
+            </div>
+            <div class="regulation-search">
+                <input type="text" id="regulationSearch" placeholder="搜尋法規關鍵字..." oninput="App.searchRegulations(this.value)">
+            </div>
+            <div class="regulation-list" id="regulationList"></div>
+            <div class="regulation-content" id="regulationContent" style="display:none;">
+                <button class="btn-back" onclick="App.showRegulationList()">‹</button>
+                <h3 id="regulationTitle"></h3>
+                <div id="regulationText"></div>
+            </div>
+        </section>
+
+        <!-- 題庫管理 -->
+        <section class="section" id="manageSection" style="display:none;">
+            <div class="section-header">
+                <button class="btn-back" onclick="App.showSection('menu')">‹</button>
+                <h2>⚙️ 題庫管理</h2>
+            </div>
+
+            <div class="manage-tabs">
+                <button class="tab-btn active" onclick="App.showManageTab('list')">題目列表</button>
+                <button class="tab-btn" onclick="App.showManageTab('add')">新增題目</button>
+                <button class="tab-btn" onclick="App.showManageTab('backup')">備份/還原</button>
+            </div>
+
+            <div class="question-list" id="questionList"></div>
+            
+            <div class="backup-section" id="backupSection" style="display:none;">
+                <h3>資料備份</h3>
+                <p>匯出您的學習進度、錯題紀錄和收藏到檔案</p>
+                <button class="btn btn-primary" onclick="App.exportData()">匯出備份檔</button>
+                
+                <h3 style="margin-top:30px;">資料還原</h3>
+                <p>從備份檔案還原您的學習進度</p>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="App.importData(this)">
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">選擇備份檔</button>
+                
+                <h3 style="margin-top:30px;">危險操作</h3>
+                <button class="btn btn-danger" onclick="App.clearAllData()">清除所有資料</button>
+            </div>
+            
+            <div class="add-question-form" id="addQuestionForm" style="display:none;">
+                <h3>新增題目</h3>
+                <div class="form-group">
+                    <label>題目類型</label>
+                    <select id="newQuestionType">
+                        <option value="fill_blank">填充題</option>
+                        <option value="choice">選擇題</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>類別</label>
+                    <select id="newQuestionCategory"></select>
+                </div>
+                <div class="form-group">
+                    <label>題目</label>
+                    <textarea id="newQuestionText"></textarea>
+                </div>
+                <div class="form-group" id="newQuestionOptions" style="display:none;">
+                    <label>選項（每行一個，格式：A. 選項文字）</label>
+                    <textarea id="newQuestionOptionsText" placeholder="A. 選項1&#10;B. 選項2&#10;C. 選項3&#10;D. 選項4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>答案</label>
+                    <input type="text" id="newQuestionAnswer">
+                </div>
+                <div class="form-group">
+                    <label>解析</label>
+                    <textarea id="newQuestionExplanation"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="App.addQuestion()">儲存題目</button>
+            </div>
+        </section>
+
+        <!-- 廣告: Footer 上方 -->
+        <div class="ad-container" id="ad-footer">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2306490072598524" data-ad-slot="AD_SLOT_3" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <footer class="footer">
+            <p>室內空品備考系統 v1.0 | 免費練習平台</p>
+        </footer>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/regulations.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
