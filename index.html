@@ -68,6 +68,7 @@
     <div class="container">
         <!-- 頁面標題 -->
         <header class="header">
+            <button class="btn-dark-mode" id="darkModeToggle" onclick="App.toggleDarkMode()" title="深色模式">🌙</button>
             <h1>🏢 室內空品題庫備考系統</h1>
             <p>室內空氣品質維護管理專責人員考試練習</p>
         </header>
@@ -164,6 +165,12 @@
                 <h2>📝 題庫練習</h2>
             </div>
             
+            <!-- 題目搜尋 -->
+            <div class="question-search-bar" id="questionSearchBar">
+                <input type="text" id="questionSearch" placeholder="🔍 搜尋題目關鍵字..." oninput="App.searchQuestions(this.value)">
+                <div class="search-results" id="searchResults" style="display:none;"></div>
+            </div>
+
             <div class="practice-mode-select" id="practiceModeSelect">
                 <h3>選擇練習模式</h3>
                 <div class="mode-grid">
@@ -203,11 +210,40 @@
                 <button class="btn btn-secondary" onclick="App.showPracticeModes()">返回</button>
             </div>
 
+            <!-- 練習完成統計 -->
+            <div class="practice-complete" id="practiceComplete" style="display:none;">
+                <div class="complete-icon">🎉</div>
+                <h3 id="completeTitle">練習完成！</h3>
+                <div class="complete-stats">
+                    <div class="complete-stat">
+                        <div class="complete-stat-value" id="completeTotal">0</div>
+                        <div class="complete-stat-label">作答題數</div>
+                    </div>
+                    <div class="complete-stat">
+                        <div class="complete-stat-value" id="completeCorrect">0</div>
+                        <div class="complete-stat-label">答對題數</div>
+                    </div>
+                    <div class="complete-stat">
+                        <div class="complete-stat-value" id="completePercent">0%</div>
+                        <div class="complete-stat-label">正確率</div>
+                    </div>
+                    <div class="complete-stat" id="completeTimeBox" style="display:none;">
+                        <div class="complete-stat-value" id="completeTime">0:00</div>
+                        <div class="complete-stat-label">作答時間</div>
+                    </div>
+                </div>
+                <div class="complete-buttons">
+                    <button class="btn btn-primary" onclick="App.showPracticeModes()">再次練習</button>
+                    <button class="btn btn-secondary" onclick="App.showSection('menu')">返回首頁</button>
+                </div>
+            </div>
+
             <!-- 練習區 -->
             <div class="practice-area" id="practiceArea" style="display:none;">
                 <div class="question-header">
                     <span class="question-count" id="questionCount"></span>
                     <span class="question-progress" id="questionProgress"></span>
+                    <span class="practice-timer" id="practiceTimer" style="display:none;">⏱ 30:00</span>
                 </div>
                 
                 <div class="question-box" id="questionBox">
@@ -290,6 +326,7 @@
 
                 <div class="exam-footer">
                     <button class="btn btn-secondary" onclick="App.prevExamQuestion()">← 上一題</button>
+                    <button class="btn btn-warning btn-flag" id="examFlagBtn" onclick="App.toggleExamFlag()" title="標記此題">🚩</button>
                     <button class="btn btn-primary" onclick="App.submitExamAnswer()">提交</button>
                     <button class="btn btn-secondary" onclick="App.nextExamQuestion()">下一題 →</button>
                 </div>
@@ -318,7 +355,15 @@
                     </div>
                 </div>
                 <div class="result-status" id="resultStatus"></div>
-                <button class="btn btn-primary" onclick="App.showSection('menu')">返回首頁</button>
+                <div class="exam-result-buttons">
+                    <button class="btn btn-primary" onclick="App.toggleExamReview()">📋 查看詳解</button>
+                    <button class="btn btn-secondary" onclick="App.showSection('menu')">返回首頁</button>
+                </div>
+                <!-- 考試詳解 -->
+                <div class="exam-review" id="examReview" style="display:none;">
+                    <h3>答題詳解</h3>
+                    <div id="examReviewList"></div>
+                </div>
             </div>
         </section>
 

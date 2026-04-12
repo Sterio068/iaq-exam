@@ -36,6 +36,12 @@ const App = {
     examStartTime: null,
     examTimerInterval: null,
     selectedChoice: null,
+    practiceCorrect: 0,
+    practiceAttempted: 0,
+    practiceStartTime: null,
+    practiceTimerInterval: null,
+    practiceTimeLeft: 0,
+    examFlagged: null,
 
     // XSS 防護：將使用者輸入的文字進行 HTML 轉義
     sanitize(str) {
@@ -56,7 +62,9 @@ const App = {
         this.renderRegulationList();
         this.populateCategorySelect();
         this.setupKeyboardShortcuts();
-        
+        this.examFlagged = new Set();
+        this.initDarkMode();
+
         // Service Worker: 網站版本不註冊（避免快取廣告腳本）
         // 如需離線功能，改用單檔版本 室內空品題庫備考系統.html
 
@@ -130,6 +138,10 @@ const App = {
         if (this.currentSection === 'exam' && section !== 'exam') {
             clearInterval(this.examTimerInterval);
             this.examTimerInterval = null;
+        }
+        // 離開練習時停止練習計時器
+        if (this.currentSection === 'practice' && section !== 'practice') {
+            this.stopPracticeTimer();
         }
 
         this.currentSection = section;
@@ -266,12 +278,14 @@ const App = {
         document.getElementById('practiceModeSelect').style.display = 'block';
         document.getElementById('categorySelect').style.display = 'none';
         document.getElementById('practiceArea').style.display = 'none';
+        document.getElementById('practiceComplete').style.display = 'none';
     },
 
     showCategorySelect() {
         document.getElementById('practiceModeSelect').style.display = 'none';
         document.getElementById('categorySelect').style.display = 'block';
         document.getElementById('practiceArea').style.display = 'none';
+        document.getElementById('practiceComplete').style.display = 'none';
     },
 
     startPractice(mode, category = null) {
@@ -307,10 +321,20 @@ const App = {
 
         this.practiceQuestions = questions;
         this.practiceIndex = 0;
+        this.practiceCorrect = 0;
+        this.practiceAttempted = 0;
+        this.practiceStartTime = Date.now();
 
         document.getElementById('practiceModeSelect').style.display = 'none';
         document.getElementById('categorySelect').style.display = 'none';
+        document.getElementById('practiceComplete').style.display = 'none';
         document.getElementById('practiceArea').style.display = 'block';
+
+        // 限時練習：啟動 30 分鐘倒數
+        this.stopPracticeTimer();
+        if (mode === 'timed') {
+            this.startPracticeTimer(30 * 60);
+        }
 
         this.showQuestion();
     },
@@ -324,9 +348,7 @@ const App = {
 
     showQuestion() {
         if (this.practiceIndex >= this.practiceQuestions.length) {
-            alert('練習完成！');
-            this.practiceIndex = 0;
-            this.showPracticeModes();
+            this.showPracticeComplete();
             return;
         }
 
@@ -422,6 +444,9 @@ const App = {
         if (!isCorrect) {
             Storage.addWrongQuestion(q);
         }
+
+        this.practiceAttempted++;
+        if (isCorrect) this.practiceCorrect++;
 
         this.showResult(isCorrect, userAnswer);
     },
@@ -522,6 +547,7 @@ const App = {
 
     quitPractice() {
         if (confirm('確定結束練習？')) {
+            this.stopPracticeTimer();
             this.showPracticeModes();
             this.updateDashboard();
         }
@@ -564,6 +590,7 @@ const App = {
         this.examAnswers = {};
         this.examCurrentIndex = 0;
         this.examStartTime = Date.now();
+        this.examFlagged = new Set();
 
         document.getElementById('examStart').style.display = 'none';
         document.getElementById('examArea').style.display = 'block';
@@ -593,6 +620,7 @@ const App = {
             let cls = 'nav-dot';
             if (i === this.examCurrentIndex) cls += ' current';
             if (this.examAnswers[i]) cls += ' answered';
+            if (this.examFlagged && this.examFlagged.has(i)) cls += ' flagged';
             html += `<div class="${cls}" onclick="App.goToExamQuestion(${i})">${i + 1}</div>`;
         }
         container.innerHTML = html;
@@ -625,6 +653,7 @@ const App = {
         }
 
         this.renderExamNavDots();
+        this.updateExamFlagBtn();
     },
 
     submitExamAnswer() {
@@ -734,12 +763,26 @@ const App = {
             statusEl.className = 'result-status fail';
         }
 
+        // 儲存含詳解的考試記錄
+        const details = this.examQuestions.map((q, i) => ({
+            question: q.question,
+            category: q.category || '',
+            type: q.type,
+            userAnswer: this.examAnswers[i]?.answer || '未作答',
+            correctAnswer: q.answer || '',
+            isCorrect: this.examAnswers[i]?.isCorrect || false,
+            explanation: q.explanation || null
+        }));
         Storage.addExamRecord({
             date: new Date().toISOString(),
             total: this.examQuestions.length,
             correct: correct,
-            percent: percent
+            percent: percent,
+            details: details
         });
+        // 重置詳解區
+        const reviewEl = document.getElementById('examReview');
+        if (reviewEl) reviewEl.style.display = 'none';
     },
 
     // ========== 複習中心 ==========
@@ -1143,6 +1186,204 @@ const App = {
         document.getElementById('newQuestionAnswer').value = '';
         document.getElementById('newQuestionExplanation').value = '';
         document.getElementById('newQuestionOptionsText').value = '';
+    },
+
+    // ===== 深色模式 =====
+    toggleDarkMode() {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('iaqDarkMode', isDark ? '1' : '0');
+        const btn = document.getElementById('darkModeToggle');
+        if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    },
+
+    initDarkMode() {
+        if (localStorage.getItem('iaqDarkMode') === '1') {
+            document.body.classList.add('dark-mode');
+            const btn = document.getElementById('darkModeToggle');
+            if (btn) btn.textContent = '☀️';
+        }
+    },
+
+    // ===== 題目搜尋 =====
+    searchQuestions(keyword) {
+        const resultsEl = document.getElementById('searchResults');
+        if (!keyword || keyword.trim().length < 2) {
+            resultsEl.style.display = 'none';
+            return;
+        }
+        const kw = keyword.toLowerCase();
+        const results = [];
+        Object.keys(QUESTIONS).forEach(cat => {
+            QUESTIONS[cat].forEach(q => {
+                if (q.question.toLowerCase().includes(kw) ||
+                    (q.answer && q.answer.toLowerCase().includes(kw))) {
+                    results.push(q);
+                }
+            });
+        });
+        if (results.length === 0) {
+            resultsEl.innerHTML = '<div class="search-empty">找不到符合題目</div>';
+        } else {
+            const cap = results.slice(0, 30);
+            let html = `<div class="search-count">找到 ${results.length} 題${results.length > 30 ? '（僅顯示前 30 筆）' : ''}</div>`;
+            cap.forEach(q => {
+                html += `
+                    <div class="search-result-item" onclick="App.startSearchPractice('${this.sanitize(q.id)}')">
+                        <div class="search-q-text">${this.sanitize(q.question)}</div>
+                        <div class="search-q-meta">${this.sanitize(q.category)} · ${q.type === 'choice' ? '選擇題' : '填充題'}</div>
+                    </div>`;
+            });
+            resultsEl.innerHTML = html;
+        }
+        resultsEl.style.display = 'block';
+    },
+
+    startSearchPractice(questionId) {
+        let question = null;
+        Object.keys(QUESTIONS).forEach(cat => {
+            const found = QUESTIONS[cat].find(q => q.id === questionId);
+            if (found) question = found;
+        });
+        if (!question) return;
+        this.practiceMode = 'search';
+        this.practiceQuestions = [question];
+        this.practiceIndex = 0;
+        this.practiceCorrect = 0;
+        this.practiceAttempted = 0;
+        this.practiceStartTime = Date.now();
+        document.getElementById('questionSearch').value = '';
+        document.getElementById('searchResults').style.display = 'none';
+        document.getElementById('practiceModeSelect').style.display = 'none';
+        document.getElementById('practiceComplete').style.display = 'none';
+        document.getElementById('practiceArea').style.display = 'block';
+        this.stopPracticeTimer();
+        this.showQuestion();
+    },
+
+    // ===== 練習計時器 =====
+    startPracticeTimer(seconds) {
+        this.practiceTimeLeft = seconds;
+        const el = document.getElementById('practiceTimer');
+        if (el) el.style.display = 'inline-block';
+        this.updatePracticeTimerDisplay();
+        this.practiceTimerInterval = setInterval(() => {
+            this.practiceTimeLeft--;
+            this.updatePracticeTimerDisplay();
+            if (this.practiceTimeLeft <= 0) {
+                this.stopPracticeTimer();
+                this.showPracticeComplete(true);
+            }
+        }, 1000);
+    },
+
+    updatePracticeTimerDisplay() {
+        const el = document.getElementById('practiceTimer');
+        if (!el) return;
+        const m = Math.floor(this.practiceTimeLeft / 60);
+        const s = this.practiceTimeLeft % 60;
+        el.textContent = `⏱ ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        el.className = 'practice-timer' + (this.practiceTimeLeft <= 120 ? ' timer-urgent' : '');
+    },
+
+    stopPracticeTimer() {
+        if (this.practiceTimerInterval) {
+            clearInterval(this.practiceTimerInterval);
+            this.practiceTimerInterval = null;
+        }
+        const el = document.getElementById('practiceTimer');
+        if (el) el.style.display = 'none';
+    },
+
+    // ===== 練習完成統計頁 =====
+    showPracticeComplete(timeout = false) {
+        this.stopPracticeTimer();
+        const elapsed = this.practiceStartTime ? Math.floor((Date.now() - this.practiceStartTime) / 1000) : 0;
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        const total = this.practiceAttempted;
+        const correct = this.practiceCorrect;
+        const rate = total > 0 ? Math.round(correct / total * 100) : 0;
+
+        document.getElementById('practiceArea').style.display = 'none';
+        document.getElementById('practiceComplete').style.display = 'block';
+        document.getElementById('completeTitle').textContent = timeout ? '⏰ 時間到！' : '🎉 練習完成！';
+        document.getElementById('completeTotal').textContent = total || this.practiceQuestions.length;
+        document.getElementById('completeCorrect').textContent = correct;
+        document.getElementById('completePercent').textContent = total > 0 ? rate + '%' : '—';
+        const timeBox = document.getElementById('completeTimeBox');
+        if (timeBox) {
+            timeBox.style.display = 'block';
+            document.getElementById('completeTime').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        }
+        this.updateDashboard();
+    },
+
+    // ===== 考試標記旗標 =====
+    toggleExamFlag() {
+        const idx = this.examCurrentIndex;
+        if (!this.examFlagged) this.examFlagged = new Set();
+        if (this.examFlagged.has(idx)) {
+            this.examFlagged.delete(idx);
+        } else {
+            this.examFlagged.add(idx);
+        }
+        this.updateExamFlagBtn();
+        this.renderExamNavDots();
+    },
+
+    updateExamFlagBtn() {
+        const btn = document.getElementById('examFlagBtn');
+        if (!btn) return;
+        const flagged = this.examFlagged && this.examFlagged.has(this.examCurrentIndex);
+        btn.textContent = flagged ? '🚩 已標記' : '🚩';
+        btn.className = 'btn btn-flag' + (flagged ? ' flagged' : '');
+    },
+
+    // ===== 考試詳解 =====
+    toggleExamReview() {
+        const reviewEl = document.getElementById('examReview');
+        if (!reviewEl) return;
+        const isHidden = reviewEl.style.display === 'none';
+        if (isHidden) {
+            this.renderExamReview();
+            reviewEl.style.display = 'block';
+        } else {
+            reviewEl.style.display = 'none';
+        }
+    },
+
+    renderExamReview() {
+        const container = document.getElementById('examReviewList');
+        if (!container) return;
+        const history = Storage.getExamHistory();
+        if (!history.length) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">無記錄</p>';
+            return;
+        }
+        const last = history[history.length - 1];
+        if (!last.details || !last.details.length) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">此次考試無詳細記錄</p>';
+            return;
+        }
+        let html = '';
+        last.details.forEach((d, i) => {
+            const cls = d.isCorrect ? 'review-correct' : 'review-wrong';
+            const icon = d.isCorrect ? '✅' : '❌';
+            html += `
+                <div class="exam-review-item ${cls}">
+                    <div class="review-header">${icon} 第 ${i + 1} 題
+                        <span class="review-cat-badge">${this.sanitize(d.category)}</span>
+                    </div>
+                    <div class="review-q-text">${this.sanitize(d.question)}</div>
+                    ${!d.isCorrect ? `
+                        <div class="review-answers">
+                            <div class="review-user-ans">你的答案：${this.sanitize(d.userAnswer)}</div>
+                            <div class="review-correct-ans">正確答案：${this.sanitize(d.correctAnswer)}</div>
+                        </div>` : ''}
+                    ${d.explanation ? `<div class="review-explanation">💡 ${this.sanitize(d.explanation)}</div>` : ''}
+                </div>`;
+        });
+        container.innerHTML = html;
     }
 };
 
