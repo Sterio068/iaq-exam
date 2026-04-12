@@ -10,20 +10,20 @@
 
 /* Dark Mode Variables */
 body.dark-mode {
-    --bg-primary: #1C1C1E;
-    --bg-secondary: #2C2C2E;
-    --bg-tertiary: #3A3A3C;
+    --bg-primary: #000000;
+    --bg-secondary: #272729;
+    --bg-tertiary: #28282a;
     --text-primary: #FFFFFF;
-    --text-secondary: #EBEBF5;
-    --text-tertiary: #EBEBF599;
+    --text-secondary: rgba(255, 255, 255, 0.72);
+    --text-tertiary: rgba(255, 255, 255, 0.48);
     --separator: rgba(255, 255, 255, 0.12);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
 }
 
 body.dark-mode .header {
-    background: linear-gradient(160deg, #000000 0%, #0d1b3e 45%, #1a237e 100%);
+    background: rgba(0, 0, 0, 0.92);
 }
 
 body.dark-mode .menu-card,
@@ -59,8 +59,9 @@ body.dark-mode .search-results {
 }
 
 :root {
-    --apple-blue: #007AFF;
-    --apple-blue-dark: #0056CC;
+    --apple-blue: #0071e3;
+    --apple-blue-dark: #0066cc;
+    --apple-blue-bright: #2997ff;
     --apple-gray: #8E8E93;
     --apple-gray-2: #AEAEB2;
     --apple-gray-3: #C7C7CC;
@@ -74,14 +75,14 @@ body.dark-mode .search-results {
     --apple-indigo: #5856D6;
     --apple-purple: #AF52DE;
     --apple-pink: #FF2D55;
-    
+
     --bg-primary: #FFFFFF;
-    --bg-secondary: #F2F2F7;
+    --bg-secondary: #f5f5f7;
     --bg-tertiary: #FFFFFF;
-    --text-primary: #000000;
-    --text-secondary: #3C3C43;
-    --text-tertiary: #3C3C43;
-    --separator: rgba(60, 60, 67, 0.12);
+    --text-primary: #1d1d1f;
+    --text-secondary: rgba(0, 0, 0, 0.64);
+    --text-tertiary: rgba(0, 0, 0, 0.48);
+    --separator: rgba(0, 0, 0, 0.10);
     
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -112,7 +113,8 @@ body {
     background: var(--bg-secondary);
     color: var(--text-primary);
     min-height: 100vh;
-    line-height: 1.4;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
 }
 
 /* Loading Indicator */
@@ -164,53 +166,36 @@ body {
     padding: 20px 20px env(safe-area-inset-bottom);
 }
 
-/* Header */
+/* Header — Apple glass dark nav style */
 .header {
     text-align: center;
     padding: 52px 20px 44px;
-    background: linear-gradient(160deg, #0d1b3e 0%, #1a237e 45%, #1565c0 100%);
+    background: rgba(29, 29, 31, 0.95);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     margin: -20px -20px 20px;
     position: relative;
     overflow: hidden;
 }
 
-.header::before {
-    content: '';
-    position: absolute;
-    top: -80px;
-    right: -60px;
-    width: 320px;
-    height: 320px;
-    background: radial-gradient(circle, rgba(99, 179, 237, 0.2) 0%, transparent 65%);
-    pointer-events: none;
-}
-
+.header::before,
 .header::after {
-    content: '';
-    position: absolute;
-    bottom: -60px;
-    left: -40px;
-    width: 240px;
-    height: 240px;
-    background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, transparent 65%);
-    pointer-events: none;
+    display: none;
 }
 
 .header h1 {
     font-size: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: white;
-    position: relative;
-    z-index: 1;
+    line-height: 1.1;
+    color: #ffffff;
 }
 
 .header p {
     font-size: 0.9375rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.72);
     margin-top: 6px;
-    position: relative;
-    z-index: 1;
+    letter-spacing: -0.224px;
 }
 
 /* Main Menu */
@@ -267,7 +252,7 @@ body {
 
 /* Menu card color themes */
 .menu-card.color-blue   { border-top-color: var(--apple-blue); }
-.menu-card.color-blue   .menu-icon { background: rgba(0, 122, 255, 0.1); }
+.menu-card.color-blue   .menu-icon { background: rgba(0, 113, 227, 0.1); }
 .menu-card.color-green  { border-top-color: var(--apple-green); }
 .menu-card.color-green  .menu-icon { background: rgba(52, 199, 89, 0.1); }
 .menu-card.color-orange { border-top-color: var(--apple-orange); }
@@ -305,7 +290,8 @@ body {
 .section-header h2 {
     font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    line-height: 1.14;
 }
 
 /* Back Button */
@@ -348,19 +334,17 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--apple-blue) 0%, #0056CC 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    background: var(--apple-blue);
+    color: #ffffff;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #1a8fff 0%, var(--apple-blue) 100%);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    background: #0077ed;
 }
 
 .btn-secondary {
     background: var(--bg-secondary);
-    color: var(--apple-blue);
+    color: var(--apple-blue-dark);
 }
 
 .btn-secondary:hover {
@@ -423,11 +407,12 @@ body {
 .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    line-height: 1.07;
     color: var(--text-primary);
 }
 
-.stat-card:nth-child(1) { background: rgba(0, 122, 255, 0.06); border-bottom-color: var(--apple-blue); }
+.stat-card:nth-child(1) { background: rgba(0, 113, 227, 0.06); border-bottom-color: var(--apple-blue); }
 .stat-card:nth-child(1) .stat-value { color: var(--apple-blue); }
 .stat-card:nth-child(2) { background: rgba(52, 199, 89, 0.06); border-bottom-color: var(--apple-green); }
 .stat-card:nth-child(2) .stat-value { color: var(--apple-green); }
@@ -466,7 +451,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--apple-blue) 0%, var(--apple-indigo) 100%);
+    background: var(--apple-blue);
     border-radius: var(--radius-full);
     transition: width var(--transition-slow);
 }
@@ -521,7 +506,7 @@ body {
 
 .category-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--apple-blue) 0%, var(--apple-indigo) 100%);
+    background: var(--apple-blue);
     border-radius: var(--radius-full);
 }
 
@@ -561,10 +546,10 @@ body {
     height: 52px;
     border-radius: 14px;
     margin: 0 auto 12px;
-    background: rgba(0, 122, 255, 0.08);
+    background: rgba(0, 113, 227, 0.08);
 }
 
-.mode-card:nth-child(1) .mode-icon { background: rgba(0, 122, 255, 0.1); }
+.mode-card:nth-child(1) .mode-icon { background: rgba(0, 113, 227, 0.1); }
 .mode-card:nth-child(2) .mode-icon { background: rgba(88, 86, 214, 0.1); }
 .mode-card:nth-child(3) .mode-icon { background: rgba(255, 149, 0, 0.1); }
 .mode-card:nth-child(4) .mode-icon { background: rgba(255, 59, 48, 0.1); }
@@ -612,11 +597,13 @@ body {
     font-size: 0.8125rem;
     font-weight: 600;
     color: var(--apple-blue);
+    letter-spacing: -0.224px;
 }
 
 .question-progress {
     font-size: 0.8125rem;
     color: var(--text-secondary);
+    letter-spacing: -0.224px;
 }
 
 .question-box {
@@ -624,7 +611,7 @@ body {
     border-radius: var(--radius-xl);
     padding: 28px 24px;
     margin-bottom: 20px;
-    box-shadow: var(--shadow-md);
+    box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
     border: 1px solid var(--separator);
 }
 
@@ -645,18 +632,18 @@ textarea {
     width: 100%;
     min-height: 100px;
     padding: 16px;
-    border: none;
+    border: 1px solid var(--separator);
     border-radius: var(--radius-md);
     font-size: 1rem;
     font-family: inherit;
     resize: vertical;
     background: var(--bg-primary);
-    box-shadow: inset 0 0 0 1px var(--separator);
 }
 
 textarea:focus {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--apple-blue);
+    outline: 2px solid var(--apple-blue);
+    outline-offset: -2px;
+    border-color: transparent;
 }
 
 /* Choice Options */
@@ -848,8 +835,8 @@ textarea:focus {
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    background: linear-gradient(135deg, var(--apple-blue) 0%, var(--apple-indigo) 100%);
-    color: white;
+    background: var(--apple-blue);
+    color: #ffffff;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
@@ -991,7 +978,7 @@ textarea:focus {
 
 .tab-btn.active {
     background: var(--apple-blue);
-    color: white;
+    color: #ffffff;
 }
 
 /* Review List */
@@ -1070,17 +1057,18 @@ textarea:focus {
 .regulation-search input {
     width: 100%;
     padding: 14px 18px;
-    border: none;
-    border-radius: var(--radius-md);
+    border: 1px solid var(--separator);
+    border-radius: 11px;
     font-size: 1rem;
     font-family: inherit;
     background: var(--bg-secondary);
-    box-shadow: inset 0 0 0 1px var(--separator);
+    letter-spacing: -0.374px;
 }
 
 .regulation-search input:focus {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--apple-blue);
+    outline: 2px solid var(--apple-blue);
+    outline-offset: -2px;
+    box-shadow: none;
 }
 
 .regulation-list {
@@ -1181,8 +1169,9 @@ textarea:focus {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--apple-blue);
+    outline: 2px solid var(--apple-blue);
+    outline-offset: -2px;
+    box-shadow: none;
 }
 
 .question-list-item {
@@ -1317,17 +1306,18 @@ textarea:focus {
 .question-search-bar input {
     width: 100%;
     padding: 14px 18px;
-    border: none;
-    border-radius: var(--radius-md);
+    border: 1px solid var(--separator);
+    border-radius: 11px;
     font-size: 1rem;
     font-family: inherit;
     background: var(--bg-primary);
-    box-shadow: inset 0 0 0 1px var(--separator);
-    transition: box-shadow var(--transition-fast);
+    transition: outline var(--transition-fast);
+    letter-spacing: -0.374px;
 }
 .question-search-bar input:focus {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--apple-blue);
+    outline: 2px solid var(--apple-blue);
+    outline-offset: -2px;
+    box-shadow: none;
 }
 .search-results {
     background: var(--bg-primary);
@@ -1414,7 +1404,8 @@ textarea:focus {
 .complete-stat-value {
     font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    line-height: 1.07;
     color: var(--apple-blue);
 }
 .complete-stat:nth-child(2) .complete-stat-value { color: var(--apple-green); }
