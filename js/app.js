@@ -149,7 +149,7 @@ const App = {
         // 考試模式時隱藏廣告
         document.body.classList.toggle('exam-mode', section === 'exam');
 
-        const sections = ['mainMenu', 'dashboardSection', 'practiceSection', 'examSection', 'reviewSection', 'regulationsSection', 'manageSection'];
+        const sections = ['mainMenu', 'seoOverview', 'dashboardSection', 'practiceSection', 'examSection', 'reviewSection', 'regulationsSection', 'manageSection'];
         sections.forEach(s => {
             const el = document.getElementById(s);
             if (el) el.style.display = 'none';
@@ -157,6 +157,7 @@ const App = {
 
         if (section === 'menu') {
             document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('seoOverview').style.display = 'block';
             this.updateDashboard();
         } else {
             const sectionEl = document.getElementById(section + 'Section');

@@ -1,0 +1,17 @@
+.git/
+.claude/
+.vercel/
+node_modules/
+
+# Source documents and local parsing tools are not part of the public site.
+parser/
+doc/
+考試文檔/
+*.py
+*_analysis.txt
+null_answers.txt
+DESIGN.md
+
+# Single-file/offline build artifacts are kept out of the hosted web app.
+build_single_file.js
+室內空品備考系統.html
