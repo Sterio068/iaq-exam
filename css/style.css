@@ -315,6 +315,32 @@ body {
     font-weight: 600;
 }
 
+.trust-links,
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 16px;
+}
+
+.trust-links {
+    justify-content: flex-start;
+    margin-top: 4px;
+}
+
+.trust-links a,
+.footer-links a {
+    color: var(--apple-blue);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.trust-links a:hover,
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
 /* Section */
 .section {
     background: var(--bg-primary);
@@ -1268,6 +1294,56 @@ textarea:focus {
     padding: 32px 20px;
     border-top: 1px solid var(--separator);
     margin-top: 8px;
+}
+
+.footer-links {
+    margin-top: 12px;
+}
+
+.info-page {
+    max-width: 820px;
+}
+
+.info-page .seo-overview {
+    margin-top: 20px;
+}
+
+.info-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--separator);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    padding: 22px;
+}
+
+.info-card h2 {
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    letter-spacing: 0;
+    margin-bottom: 10px;
+}
+
+.info-card p,
+.info-card li {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+}
+
+.info-card ul,
+.info-card ol {
+    padding-left: 20px;
+}
+
+.info-card a {
+    color: var(--apple-blue);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.info-card a:hover {
+    text-decoration: underline;
 }
 
 /* Print Styles */
