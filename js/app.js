@@ -9,7 +9,10 @@ const CONFIG = {
     TIMER_INTERVAL_MS: 1000,
     MAX_EXAM_HISTORY: 10,
     ANIMATION_DELAY_MS: 300,
-    ID_PREFIX_LENGTH: 4
+    ID_PREFIX_LENGTH: 4,
+    TOAST_DURATION_MS: 2600,
+    TOAST_REMOVE_FALLBACK_MS: 600,
+    TOAST_MAX_VISIBLE: 3
 };
 
 // 清除答案文字（移除標點符號）
@@ -54,6 +57,31 @@ const App = {
     // 安全設定 innerHTML（使用 textContent 避免 XSS）
     safeSetHTML(element, html) {
         element.innerHTML = html;
+    },
+
+    // 非阻斷提示（取代 alert）
+    showToast(message, type = 'info') {
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container';
+            container.setAttribute('role', 'status');
+            container.setAttribute('aria-live', 'polite');
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        while (container.children.length > CONFIG.TOAST_MAX_VISIBLE) {
+            container.removeChild(container.firstChild);
+        }
+        setTimeout(() => {
+            toast.classList.add('toast-hide');
+            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            setTimeout(() => toast.remove(), CONFIG.TOAST_REMOVE_FALLBACK_MS);
+        }, CONFIG.TOAST_DURATION_MS);
     },
 
     init() {
@@ -310,13 +338,13 @@ const App = {
             const wrongList = Storage.getWrongQuestions();
             questions = wrongList;
             if (questions.length === 0) {
-                alert('目前沒有錯題記錄');
+                this.showToast('目前沒有錯題記錄', 'warning');
                 return;
             }
         }
 
         if (questions.length === 0) {
-            alert('沒有可練習的題目');
+            this.showToast('沒有可練習的題目', 'warning');
             return;
         }
 
@@ -421,7 +449,7 @@ const App = {
 
         if (q.type === 'choice') {
             if (!this.selectedChoice) {
-                alert('請選擇一個選項');
+                this.showToast('請選擇一個選項', 'warning');
                 return;
             }
             userAnswer = this.selectedChoice;
@@ -429,7 +457,7 @@ const App = {
         } else {
             userAnswer = document.getElementById('userAnswer').value.trim();
             if (!userAnswer) {
-                alert('請輸入答案');
+                this.showToast('請輸入答案', 'warning');
                 return;
             }
             // 關鍵字比對
@@ -659,7 +687,7 @@ const App = {
 
         if (q.type === 'choice') {
             if (!this.selectedChoice) {
-                alert('請選擇一個選項');
+                this.showToast('請選擇一個選項', 'warning');
                 return;
             }
             userAnswer = this.selectedChoice;
@@ -667,7 +695,7 @@ const App = {
         } else {
             userAnswer = document.getElementById('examUserAnswer').value.trim();
             if (!userAnswer) {
-                alert('請輸入答案');
+                this.showToast('請輸入答案', 'warning');
                 return;
             }
             // 關鍵字比對
@@ -989,7 +1017,7 @@ const App = {
     showRegulation(id) {
         const reg = REGULATIONS.find(r => r.id === id);
         if (!reg) {
-            alert('法規不存在');
+            this.showToast('法規不存在', 'error');
             return;
         }
         document.getElementById('regulationList').style.display = 'none';
@@ -1081,13 +1109,13 @@ const App = {
             try {
                 const result = Storage.importData(e.target.result);
                 if (result.success) {
-                    alert(`成功匯入 ${result.count} 筆資料`);
+                    this.showToast(`成功匯入 ${result.count} 筆資料`, 'success');
                     this.updateDashboard();
                 } else {
-                    alert('匯入失敗：' + result.error);
+                    this.showToast('匯入失敗：' + result.error, 'error');
                 }
             } catch (err) {
-                alert('匯入失敗：檔案格式錯誤');
+                this.showToast('匯入失敗：檔案格式錯誤', 'error');
             }
         };
         reader.readAsText(file);
@@ -1097,7 +1125,7 @@ const App = {
         if (!confirm('確定要清除所有資料嗎？這將刪除所有學習進度、錯題紀錄和收藏！')) return;
         if (!confirm('此操作無法復原，確定嗎？')) return;
         Storage.clearAllData();
-        alert('所有資料已清除');
+        this.showToast('所有資料已清除', 'success');
         this.updateDashboard();
     },
 
@@ -1131,7 +1159,7 @@ const App = {
         if (idx >= 0) {
             QUESTIONS[category].splice(idx, 1);
             this.renderQuestionList();
-            alert('已刪除');
+            this.showToast('已刪除', 'success');
         }
     },
 
@@ -1143,12 +1171,12 @@ const App = {
         const explanation = document.getElementById('newQuestionExplanation').value.trim();
 
         if (!questionText) {
-            alert('請輸入題目');
+            this.showToast('請輸入題目', 'warning');
             return;
         }
 
         if (!answer) {
-            alert('請輸入答案');
+            this.showToast('請輸入答案', 'warning');
             return;
         }
 
@@ -1177,7 +1205,7 @@ const App = {
         }
         QUESTIONS[category].push(newQ);
 
-        alert('題目已新增');
+        this.showToast('題目已新增', 'success');
         document.getElementById('newQuestionText').value = '';
         document.getElementById('newQuestionAnswer').value = '';
         document.getElementById('newQuestionExplanation').value = '';

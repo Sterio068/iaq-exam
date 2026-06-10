@@ -1670,3 +1670,43 @@ textarea:focus {
 body.exam-mode .ad-container {
     display: none !important;
 }
+
+/* Toast 非阻斷提示 */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 9999;
+    pointer-events: none;
+    max-width: min(90vw, 420px);
+}
+
+.toast {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--separator);
+    border-left: 4px solid var(--apple-blue);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 12px 20px;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    max-width: 100%;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.toast-success { border-left-color: var(--apple-green); }
+.toast-warning { border-left-color: var(--apple-orange); }
+.toast-error { border-left-color: var(--apple-red); }
+
+.toast-hide {
+    opacity: 0;
+    transform: translateY(8px);
+}
