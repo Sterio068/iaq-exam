@@ -12,7 +12,8 @@ const CONFIG = {
     ID_PREFIX_LENGTH: 4,
     TOAST_DURATION_MS: 2600,
     TOAST_REMOVE_FALLBACK_MS: 600,
-    TOAST_MAX_VISIBLE: 3
+    TOAST_MAX_VISIBLE: 3,
+    IMAGE_ALT_MAX_LENGTH: 60
 };
 
 // 清除答案文字（移除標點符號）
@@ -375,6 +376,28 @@ const App = {
         }
     },
 
+    // 題目附圖：渲染 <img> 並依題幹文字生成有意義的 alt
+    renderQuestionImage(containerId, q) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        if (!q.image) {
+            container.style.display = 'none';
+            return;
+        }
+        const img = document.createElement('img');
+        img.src = 'img/' + q.image;
+        img.loading = 'lazy';
+        const stem = (q.question || '').replace(/\s+/g, ' ').trim();
+        img.alt = stem
+            ? '題目附圖：' + (stem.length > CONFIG.IMAGE_ALT_MAX_LENGTH
+                ? stem.slice(0, CONFIG.IMAGE_ALT_MAX_LENGTH) + '…'
+                : stem)
+            : '題目附圖';
+        container.appendChild(img);
+        container.style.display = 'block';
+    },
+
     showQuestion() {
         if (this.practiceIndex >= this.practiceQuestions.length) {
             this.showPracticeComplete();
@@ -393,13 +416,7 @@ const App = {
         this.selectedChoice = null;
 
         // 圖片
-        const imgEl = document.getElementById('questionImage');
-        if (q.image) {
-            imgEl.src = 'img/' + q.image;
-            imgEl.style.display = 'block';
-        } else {
-            imgEl.style.display = 'none';
-        }
+        this.renderQuestionImage('questionImage', q);
 
         // 題目類型
         if (q.type === 'choice') {
@@ -659,13 +676,7 @@ const App = {
         document.getElementById('examUserAnswer').value = this.examAnswers[this.examCurrentIndex]?.answer || '';
         this.selectedChoice = this.examAnswers[this.examCurrentIndex]?.choice || null;
 
-        const imgEl = document.getElementById('examQuestionImage');
-        if (q.image) {
-            imgEl.src = 'img/' + q.image;
-            imgEl.style.display = 'block';
-        } else {
-            imgEl.style.display = 'none';
-        }
+        this.renderQuestionImage('examQuestionImage', q);
 
         if (q.type === 'choice') {
             document.getElementById('examFillArea').style.display = 'none';

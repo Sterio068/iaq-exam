@@ -713,6 +713,11 @@ body {
     border-radius: var(--radius-md);
 }
 
+.question-image img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+}
+
 /* Textarea */
 textarea {
     width: 100%;
