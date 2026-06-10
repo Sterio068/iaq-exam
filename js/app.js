@@ -416,7 +416,6 @@ const App = {
 
     submitAnswer() {
         const q = this.practiceQuestions[this.practiceIndex];
-        console.log('submitAnswer called', q);
         let userAnswer = '';
         let isCorrect = false;
 
@@ -436,8 +435,6 @@ const App = {
             // 關鍵字比對
             isCorrect = checkKeywordAnswer(userAnswer, q.answer);
         }
-
-        console.log('Answer checked', {userAnswer, isCorrect, correctAnswer: q.answer});
 
         Storage.markPracticed(q.id);
         Storage.updateQuestionStats(q.id, isCorrect);
@@ -465,12 +462,10 @@ const App = {
 
     showResult(isCorrect, userAnswer, showOnly = false) {
         const q = this.practiceQuestions[this.practiceIndex];
-        console.log('showResult called', {isCorrect, userAnswer, showOnly, q});
-        
+
         const resultSection = document.getElementById('resultSection');
         const answerButtons = document.getElementById('answer-buttons');
-        console.log('Elements found:', {resultSection, answerButtons});
-        
+
         if (resultSection) resultSection.style.display = 'block';
         if (answerButtons) answerButtons.style.display = 'none';
 
