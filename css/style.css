@@ -1360,6 +1360,28 @@ textarea:focus {
     text-decoration: underline;
 }
 
+/* 章節重點頁標準值表 */
+.std-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 4px;
+    font-size: 0.9375rem;
+}
+
+.std-table th,
+.std-table td {
+    border: 1px solid var(--separator);
+    padding: 8px 10px;
+    text-align: left;
+    color: var(--text-secondary);
+}
+
+.std-table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
 /* Print Styles */
 @media print {
     body {
