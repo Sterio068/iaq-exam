@@ -47,6 +47,67 @@ const App = {
     practiceTimeLeft: 0,
     examFlagged: null,
 
+    // GA4 事件追蹤（gtag 未就緒時靜默忽略）
+    track(name, params) {
+        if (typeof window.gtag !== 'function') return;
+        window.gtag('event', name, params || {});
+    },
+
+    // Core Web Vitals RUM：以 PerformanceObserver 量測 LCP/CLS/INP
+    rateVital(name, value) {
+        const t = { LCP: [2500, 4000], CLS: [0.1, 0.25], INP: [200, 500] }[name];
+        if (!t) return 'unknown';
+        return value <= t[0] ? 'good' : value <= t[1] ? 'needs-improvement' : 'poor';
+    },
+
+    sendVital(name, value) {
+        this.track('web_vital', {
+            name: name,
+            value: Math.round(value * 1000) / 1000,
+            rating: this.rateVital(name, value),
+            path: window.location.pathname || '/'
+        });
+    },
+
+    initWebVitals() {
+        if (typeof PerformanceObserver !== 'function') return;
+        try {
+            let lcp = 0;
+            new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                const last = entries[entries.length - 1];
+                if (last) lcp = last.startTime;
+            }).observe({ type: 'largest-contentful-paint', buffered: true });
+
+            let cls = 0;
+            new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (!entry.hadRecentInput) cls += entry.value;
+                }
+            }).observe({ type: 'layout-shift', buffered: true });
+
+            let inp = 0;
+            try {
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        if (entry.duration > inp) inp = entry.duration;
+                    }
+                }).observe({ type: 'event', buffered: true, durationThreshold: 40 });
+            } catch (e) { /* event timing unsupported */ }
+
+            const flush = () => {
+                if (document.visibilityState !== 'hidden') return;
+                if (lcp > 0) { this.sendVital('LCP', lcp); lcp = 0; }
+                this.sendVital('CLS', cls);
+                if (inp > 0) { this.sendVital('INP', inp); inp = 0; }
+            };
+            document.addEventListener('visibilitychange', flush);
+            window.addEventListener('pagehide', flush, { once: true });
+        } catch (e) {
+            /* observer unsupported, skip RUM */
+        }
+    },
+
     // XSS 防護：將使用者輸入的文字進行 HTML 轉義
     sanitize(str) {
         if (!str) return '';
@@ -93,6 +154,7 @@ const App = {
         this.setupKeyboardShortcuts();
         this.examFlagged = new Set();
         this.initDarkMode();
+        this.initWebVitals();
 
         // Service Worker: 網站版本不註冊（避免快取廣告腳本）
         // 如需離線功能，改用單檔版本 室內空品題庫備考系統.html
@@ -633,6 +695,12 @@ const App = {
         this.examStartTime = Date.now();
         this.examFlagged = new Set();
 
+        // 標準化跨站考試漏斗事件
+        this.track('exam_started', {
+            mode: 'mock',
+            question_count: this.examQuestions.length
+        });
+
         document.getElementById('examStart').style.display = 'none';
         document.getElementById('examArea').style.display = 'block';
         document.getElementById('examResult').style.display = 'none';
@@ -815,6 +883,13 @@ const App = {
             percent: percent,
             details: details
         });
+        // 標準化跨站考試漏斗事件
+        this.track('exam_completed', {
+            mode: 'mock',
+            total: this.examQuestions.length,
+            score: percent,
+            passed: percent >= CONFIG.PASSING_THRESHOLD
+        });
         // 重置詳解區
         const reviewEl = document.getElementById('examReview');
         if (reviewEl) reviewEl.style.display = 'none';
@@ -834,6 +909,11 @@ const App = {
         if (tab === 'wrong') {
             this.renderWrongList();
             document.getElementById('wrongList').style.display = 'block';
+            // 標準化跨站錯題複習漏斗事件
+            this.track('wrongbook_review', {
+                total_wrong: Storage.getWrongQuestions().length,
+                source: 'review_center'
+            });
         } else if (tab === 'favorite') {
             this.renderFavoriteList();
             document.getElementById('favoriteList').style.display = 'block';
